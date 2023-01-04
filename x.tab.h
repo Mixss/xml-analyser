@@ -7,5 +7,7 @@
 #define STAG_BEG 259
 #define ETAG_BEG 260
 #define TAG_END 261
+#define ETAG_END 262
+#define CHAR 263
 
 #endif

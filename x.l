@@ -22,14 +22,24 @@ IDENT_EXPR [A-Za-z:_]([A-Za-z:_0-9]|"-")*
 <ST_PI>"?>" { BEGIN(INITIAL); return process_token(yytext, "PI_TAG_END", "", PI_TAG_END); }
 <ST_PI>.
 
- /* start tag begin */
+ /* tag begin */
 "<"{IDENT_EXPR} { char* substr = malloc(MAXSTRLEN); strncpy(substr, yytext+1, MAXSTRLEN); return process_token(yytext, "STAG_BEG", substr, STAG_BEG); }
 
- /* end tag begin */
+ /* empty tag begin */
 "</"{IDENT_EXPR} { char* substr = malloc(MAXSTRLEN); strncpy(substr, yytext+2, MAXSTRLEN); return process_token(yytext, "ETAG_BEG", substr, ETAG_BEG); }
 
  /* tag end */
 ">" { return process_token(yytext, "TAG_END", "", TAG_END); }
+
+ /* empty tag end */
+"/>" { return process_token(yytext, "ETAG_END", "", ETAG_END); }
+
+ /* special symbols */
+"&lt" { return process_token(yytext, "CHAR", "<", CHAR); }
+"&gt" { return process_token(yytext, "CHAR", ">", CHAR); }
+"&amp" { return process_token(yytext, "CHAR", "&", CHAR); }
+"&apos" { return process_token(yytext, "CHAR", "'", CHAR); }
+"&quote" { return process_token(yytext, "CHAR", "\"", CHAR); }
 
 %%
 
