@@ -9,5 +9,6 @@
 #define TAG_END 261
 #define ETAG_END 262
 #define CHAR 263
+#define S 264
 
 #endif

@@ -41,6 +41,16 @@ IDENT_EXPR [A-Za-z:_]([A-Za-z:_0-9]|"-")*
 "&apos" { return process_token(yytext, "CHAR", "'", CHAR); }
 "&quote" { return process_token(yytext, "CHAR", "\"", CHAR); }
 
+ /* tabulations, spaces, newline*/
+^[ \t]+
+[\r]+
+[\n] { return '\n'; }
+
+[ \t] { return process_token(yytext, "S", yytext, S); }
+
+ /* other signs */
+. { return process_token(yytext, "CHAR", yytext, CHAR); }
+
 %%
 
 int process_token(const char *text, const char *TokenType, const char *TokenVal, const int TokenID)
