@@ -69,7 +69,7 @@ IDENT_EXPR [A-Za-z:_]([A-Za-z:_0-9]|"-")*
 
 int process_token(const char *text, const char *TokenType, const char *TokenVal, const int TokenID)
 {
-    printf("%-20.20s%-15s .%s.\n", text, TokenType, TokenVal);
+    //printf("%-20.20s%-15s .%s.\n", text, TokenType, TokenVal);
     switch (TokenID) {
         case PI_TAG_BEG:
             strncpy(yylval.s, TokenVal, MAXSTRLEN); break;

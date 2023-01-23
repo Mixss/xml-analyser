@@ -53,7 +53,7 @@ PROCESS_INSTRUCTIONS: PROCESS_INSTRUCTION | PROCESS_INSTRUCTION PROCESS_INSTRUCT
 ;
 
 PROCESS_INSTRUCTION: PI_TAG_BEG PI_TAG_END {
-	printf("Processing instruction found: %s\n", $1);
+	printf("<?%s?>\n", $1);
 };
 
 ELEMENT: EMPTY_TAG | TAGS_PAIR
@@ -67,22 +67,25 @@ TAGS_PAIR: start_tag CONTENT_LIST end_tag {
 	{
 		yyerror("Tags do not match!\n");
 	}
-	else
-	{
-		printf("Tags found: %s\n", $1);
-	}
 };
 
-start_tag: STAG_BEG TAG_END
-;
+start_tag: STAG_BEG TAG_END {
+	indent();
+	printf("<%s>\n", $1);
+	level++;
+};
 
-end_tag: ETAG_BEG TAG_END
-;
+end_tag: ETAG_BEG TAG_END {
+	level--;
+	indent();
+	printf("</%s>\n", $1);
+	
+};
 
 CONTENT_LIST: CONTENT | CONTENT CONTENT_LIST
 ;
 
-CONTENT: ELEMENT_LIST | WHITE_CHAR_LIST | word | NEWLINE_LIST | %empty
+CONTENT: ELEMENT_LIST | WHITE_CHAR_LIST | word | NEWLINE_LIST | %empty 
 ;
 
 ELEMENT_LIST: ELEMENT | ELEMENT ELEMENT_LIST
@@ -105,7 +108,8 @@ int yyerror( const char *txt )
 void indent()
 {
 	for(int i=0; i<level; i++)
-		printf("\t");
+		for(int j=0; j<IDENT_LENGHT; j++)
+			printf(" ");
 }
 
 int main()
