@@ -1,9 +1,14 @@
-#
 CC=gcc
 LEX=flex
 
-all: x.l
-	$(LEX) x.l
-	gcc lex.yy.c -lfl -o ./x
+% : %.tab.o %.o 
+	$(CC) $< $*.o $(LDFLAGS) -o $@
 
+%.tab.c %.tab.h: %.y
+	bison -d $<
+
+%.c: %.l %.tab.h
+	$(LEX) -t $< > $@
+
+x: x.y x.l
 

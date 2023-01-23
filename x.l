@@ -22,17 +22,31 @@ IDENT_EXPR [A-Za-z:_]([A-Za-z:_0-9]|"-")*
 <ST_PI>"?>" { BEGIN(INITIAL); return process_token(yytext, "PI_TAG_END", "", PI_TAG_END); }
 <ST_PI>.
 
- /* tag begin */
-"<"{IDENT_EXPR} { char* substr = malloc(MAXSTRLEN); strncpy(substr, yytext+1, MAXSTRLEN); return process_token(yytext, "STAG_BEG", substr, STAG_BEG); }
+<INITIAL>"<"{IDENT_EXPR} { 
+    BEGIN(ST_TAG); 
+    char* substr = malloc(MAXSTRLEN); 
+    strncpy(substr, yytext+1, MAXSTRLEN); 
+    return process_token(yytext, "STAG_BEG", substr, STAG_BEG);
+}
 
- /* empty tag begin */
-"</"{IDENT_EXPR} { char* substr = malloc(MAXSTRLEN); strncpy(substr, yytext+2, MAXSTRLEN); return process_token(yytext, "ETAG_BEG", substr, ETAG_BEG); }
+<INITIAL>"</"{IDENT_EXPR} { 
+    BEGIN(ST_TAG); 
+    char* substr = malloc(MAXSTRLEN); 
+    strncpy(substr, yytext+2, MAXSTRLEN); 
+    return process_token(yytext, "ETAG_BEG", substr, ETAG_BEG);
+}
 
- /* tag end */
-">" { return process_token(yytext, "TAG_END", "", TAG_END); }
+<ST_TAG>">" {
+    BEGIN(INITIAL);
+    return process_token(yytext, "TAG_END", "", TAG_END);
+}
 
- /* empty tag end */
-"/>" { return process_token(yytext, "ETAG_END", "", ETAG_END); }
+<ST_TAG>"/>" {
+    BEGIN(INITIAL);
+    return process_token(yytext, "ETAG_END", "", ETAG_END);
+}
+
+<ST_TAG>.
 
  /* special symbols */
 "&lt" { return process_token(yytext, "CHAR", "<", CHAR); }
@@ -58,8 +72,15 @@ int process_token(const char *text, const char *TokenType, const char *TokenVal,
     printf("%-20.20s%-15s .%s.\n", text, TokenType, TokenVal);
     switch (TokenID) {
         case PI_TAG_BEG:
-            // printf("==%s==\n", TokenVal);
-            break;
+            strncpy(yylval.s, TokenVal, MAXSTRLEN); break;
+        case STAG_BEG:
+            strncpy(yylval.s, TokenVal, MAXSTRLEN); break;
+        case ETAG_BEG:
+            strncpy(yylval.s, TokenVal, MAXSTRLEN); break;
+        case CHAR:
+            strncpy(yylval.s, TokenVal, MAXSTRLEN); break;
+        case S:
+            strncpy(yylval.s, TokenVal, MAXSTRLEN); break;
     }
 
     return TokenID;
